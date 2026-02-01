@@ -1,24 +1,80 @@
 {
     "classes": [
         {
-            "category": "food",
+            "category": "fruit",
             "classId": 0,
-            "classLabel": "can of pringles potato chips",
-            "confidence": 0.99,
+            "classLabel": "bananas",
+            "confidence": 0.9499,
             "id": 1
         },
         {
-            "category": "food",
+            "category": "vegetable",
             "classId": 1,
-            "classLabel": "orange mandarin fruit",
-            "confidence": 0.98,
+            "classLabel": "cauliflower",
+            "confidence": 0.8999,
             "id": 2
+        },
+        {
+            "category": "vegetable",
+            "classId": 2,
+            "classLabel": "carrots",
+            "confidence": 0.8999,
+            "id": 3
+        },
+        {
+            "category": "meat",
+            "classId": 3,
+            "classLabel": "sausages",
+            "confidence": 0.85,
+            "id": 4
+        },
+        {
+            "category": "bakery",
+            "classId": 4,
+            "classLabel": "packaged bread",
+            "confidence": 0.85,
+            "id": 5
+        },
+        {
+            "category": "dairy",
+            "classId": 5,
+            "classLabel": "packaged cheese",
+            "confidence": 0.8,
+            "id": 6
+        },
+        {
+            "category": "dairy",
+            "classId": 6,
+            "classLabel": "packaged yogurt",
+            "confidence": 0.8,
+            "id": 7
+        },
+        {
+            "category": "snacks",
+            "classId": 7,
+            "classLabel": "packaged nuts",
+            "confidence": 0.75,
+            "id": 8
+        },
+        {
+            "category": "meat",
+            "classId": 8,
+            "classLabel": "packaged meat",
+            "confidence": 0.75,
+            "id": 9
+        },
+        {
+            "category": "vegetable",
+            "classId": 9,
+            "classLabel": "packaged vegetables",
+            "confidence": 0.6999,
+            "id": 10
         }
     ],
     "seconds": 0,
     "source_height": 1080,
-    "source_id": "0bb61276-ff2f-11f0-ae2c-52c4a210b0ed",
+    "source_id": "42da4d4e-ff34-11f0-ae2c-52c4a210b0ed",
     "source_width": 1920,
-    "system_timestamp": 1769923810414300000,
+    "system_timestamp": 1769926052787342000,
     "timestamp": 0
 }
