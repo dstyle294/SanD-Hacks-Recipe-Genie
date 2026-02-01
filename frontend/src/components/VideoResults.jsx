@@ -1,15 +1,42 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, FileText, X, ExternalLink } from 'lucide-react';
+import { Play, FileText, X, ExternalLink, Bookmark, CheckCircle2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import * as api from '../api';
 
-const VideoCard = ({ video }) => {
+const VideoCard = ({ video, recipeName, ingredients, user }) => {
   const [showGuide, setShowGuide] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Parse details
   const scoreColor = video.smart_score > 80 ? 'text-green-400' : video.smart_score > 50 ? 'text-yellow-400' : 'text-red-400';
-  const ringColor = video.smart_score > 80 ? '#4ade80' : video.smart_score > 50 ? '#facc15' : '#f87171';
+
+  const handleSave = async (e) => {
+    e.stopPropagation();
+    if (!user) {
+      alert("Please login to save recipes!");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await api.saveRecipe({
+        recipe_name: recipeName || video.title,
+        ingredients: ingredients || [],
+        video_url: video.url,
+        thumbnail: video.thumbnail,
+        accessible_guide: video.accessible_guide
+      });
+      setIsSaved(true);
+    } catch (err) {
+      console.error("Save failed:", err);
+      alert("Failed to save recipe.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <>
@@ -35,6 +62,20 @@ const VideoCard = ({ video }) => {
             <span className={`text-xs font-bold ${scoreColor} mr-1`}>{Math.round(video.smart_score)}%</span>
             <span className="text-[10px] text-slate-400 uppercase tracking-wider">Match</span>
           </div>
+
+          {/* Save Button */}
+          {user && (
+            <button
+              onClick={handleSave}
+              disabled={isSaved || isSaving}
+              className={`absolute top-2 left-2 p-2 rounded-full backdrop-blur-md border transition-all ${isSaved
+                ? 'bg-teal-500/20 border-teal-500 text-teal-400'
+                : 'bg-slate-900/80 border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+            >
+              {isSaved ? <CheckCircle2 className="w-4 h-4" /> : <Bookmark className={`w-4 h-4 ${isSaving ? 'animate-pulse' : ''}`} />}
+            </button>
+          )}
         </div>
 
         {/* Content */}
@@ -68,7 +109,7 @@ const VideoCard = ({ video }) => {
         </div>
       </motion.div>
 
-      {/* Guide Modal */}
+      {/* Guide Modal (Same as before) */}
       <AnimatePresence>
         {showGuide && (
           <motion.div
@@ -100,7 +141,7 @@ const VideoCard = ({ video }) => {
         )}
       </AnimatePresence>
 
-      {/* Video Modal */}
+      {/* Video Modal (Same as before) */}
       <AnimatePresence>
         {showVideo && (
           <motion.div
@@ -134,7 +175,7 @@ const VideoCard = ({ video }) => {
   );
 };
 
-const VideoResults = ({ videos, isLoading }) => {
+const VideoResults = ({ videos, isLoading, recipeName, ingredients, user }) => {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center">
@@ -165,7 +206,13 @@ const VideoResults = ({ videos, isLoading }) => {
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {videos.map((video, idx) => (
-          <VideoCard key={idx} video={video} />
+          <VideoCard
+            key={idx}
+            video={video}
+            recipeName={recipeName}
+            ingredients={ingredients}
+            user={user}
+          />
         ))}
       </div>
     </div>
