@@ -48,6 +48,21 @@ def capture_image(save_dir="./images"):
             cv2.destroyAllWindows()
             print(f"✅ Image saved to {image_path}")
             return image_path
+        
+# -------------------- BLUR DETECTION --------------------
+def is_blurry(image_path, threshold=100.0):
+    """
+    Returns True if image is blurry
+    """
+    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        return True
+
+    variance = cv2.Laplacian(img, cv2.CV_64F).var()
+    print(f"🧪 Blur score: {variance:.2f}")
+    return variance < threshold
+
+# -------------------- SAFE PREDICT --------------------
 def safe_predict(endpoint, image_path, retries=1):
     """
     Safe EyePop predict with ONE retry (free-trial safe)
@@ -73,24 +88,33 @@ def filter_classes(eyepop_result):
         })
     return filtered
 
+
 # -------------------- MAIN --------------------
 
-example_image_path = capture_image()
+while True:
+    example_image_path = capture_image()
 
-objectOfInterest = input(
-    "Enter object of interest (bill, receipt, bottle, clothing, etc): "
-).strip().lower()
+    # Blur check (NO EyePop call yet)
+    if is_blurry(example_image_path):
+        print("⚠️ Image is too blurry. Please retake the photo.\n")
+        continue
+    break
 
-if objectOfInterest in ["bill", "receipt", "invoice"]:
-    questionList = "List the items in the bill"
-else:
-    questionList = f"List the detected {objectOfInterest} objects"
-
+# 🔥 Generic, auto-safe prompt (NO USER INPUT)
 prompt = (
-    f"Analyze the image of the {objectOfInterest}. "
-    f"{questionList}. "
-    "If you are unable to answer, set the classLabel to null."
+    "Analyze the image. "
+    "Ignore people, faces, hands, body parts, and human features. "
+    "Ignore background objects not related to items or products. "
+    "If the image is a bill or receipt, list the items on the bill. "
+    "If the image is of a shelf or store display, list the products visible. "
+    "If the image is of a single product, list that product only. "
+    "If the image is unclear or contains no items, respond with NO OBJECTS DETECTED. "
+    "Otherwise, detect and list only physical items or products visible. "
+    "Do not include humans or body parts as objects. "
+    "Use clear class labels only. "
+    "If unsure, set classLabel to null."
 )
+
 
 print(f"\n🧠 Using prompt:\n{prompt}\n")
 
@@ -112,7 +136,6 @@ with EyePopSdk.workerEndpoint(api_key=api_key) as endpoint:
 
     result = safe_predict(endpoint, example_image_path)
 
-
 # -------------------- OUTPUT --------------------
 
 with open("./output/raw_eyepop.json", "w") as f:
@@ -122,3 +145,4 @@ filtered_items = filter_classes(result)
 
 print("✅ Filtered Output:")
 print(json.dumps(filtered_items, indent=4))
+
