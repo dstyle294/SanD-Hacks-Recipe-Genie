@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+python-multipart
+pydantic
+python-dotenv
+google-api-python-client
+youtube-transcript-api
+langchain-google-genai
+langchain-core
+eyepop
+opencv-python-headless
