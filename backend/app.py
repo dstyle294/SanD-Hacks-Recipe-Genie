@@ -22,7 +22,7 @@ from tasks.scheduler import start_scheduler
 from models.db_models import User, PantryItem, SavedRecipe
 from sqlalchemy.future import select
 
-app = FastAPI(title="Recipe Genie API")
+app = FastAPI(title="SnapChef API")
 
 # Setup CORS
 app.add_middleware(
@@ -98,11 +98,11 @@ async def google_auth(request: dict, db: AsyncSession = Depends(get_db)):
     }
 
 @app.get("/api/auth/me")
-async def get_me(token: str = Header(None), db: AsyncSession = Depends(get_db)):
-    if not token:
+async def get_me(authorization: str = Header(None), db: AsyncSession = Depends(get_db)):
+    if not authorization:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
-    payload = AuthService.decode_access_token(token)
+    payload = AuthService.decode_access_token(authorization)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid token")
     
@@ -120,11 +120,11 @@ async def get_me(token: str = Header(None), db: AsyncSession = Depends(get_db)):
     }
 
 @app.get("/api/pantry", response_model=List[PantryItemResponse])
-async def get_pantry(token: str = Header(None), db: AsyncSession = Depends(get_db)):
-    if not token:
+async def get_pantry(authorization: str = Header(None), db: AsyncSession = Depends(get_db)):
+    if not authorization:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
-    payload = AuthService.decode_access_token(token)
+    payload = AuthService.decode_access_token(authorization)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid token")
     
@@ -144,11 +144,11 @@ async def get_pantry(token: str = Header(None), db: AsyncSession = Depends(get_d
     ]
 
 @app.get("/api/recipes/history", response_model=List[SavedRecipeResponse])
-async def get_recipe_history(token: str = Header(None), db: AsyncSession = Depends(get_db)):
-    if not token:
+async def get_recipe_history(authorization: str = Header(None), db: AsyncSession = Depends(get_db)):
+    if not authorization:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
-    payload = AuthService.decode_access_token(token)
+    payload = AuthService.decode_access_token(authorization)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid token")
     
@@ -169,14 +169,14 @@ async def get_recipe_history(token: str = Header(None), db: AsyncSession = Depen
     ]
 
 @app.post("/api/recipes/save")
-async def save_recipe(request: SaveRecipeRequest, token: str = Header(None), db: AsyncSession = Depends(get_db)):
-    print(f"DEBUG: save_recipe endpoint reached. Token header received: {token[:20] if token else 'None'}...")
-    if not token:
-        print("DEBUG: save_recipe failed: No token header found")
+async def save_recipe(request: SaveRecipeRequest, authorization: str = Header(None), db: AsyncSession = Depends(get_db)):
+    print(f"DEBUG: save_recipe endpoint reached. Authorization header received: {authorization[:20] if authorization else 'None'}...")
+    if not authorization:
+        print("DEBUG: save_recipe failed: No Authorization header found")
         raise HTTPException(status_code=401, detail="Not authenticated")
     
     try:
-        payload = AuthService.decode_access_token(token)
+        payload = AuthService.decode_access_token(authorization)
         print(f"DEBUG: Decoded payload in save_recipe: {payload}")
         if not payload:
             print("DEBUG: save_recipe failed: Token decoding returned None")
@@ -208,7 +208,7 @@ async def save_recipe(request: SaveRecipeRequest, token: str = Header(None), db:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 @app.post("/api/analyze-pantry", response_model=PantryAnalysisResponse)
-async def analyze_pantry(file: UploadFile = File(...), token: Optional[str] = Header(None), db: AsyncSession = Depends(get_db)):
+async def analyze_pantry(file: UploadFile = File(...), authorization: Optional[str] = Header(None), db: AsyncSession = Depends(get_db)):
     try:
         # Save temp file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
@@ -224,9 +224,9 @@ async def analyze_pantry(file: UploadFile = File(...), token: Optional[str] = He
             expiry_info = agent_service.estimate_expiry_dates(ingredients)
             
             # If authenticated, save to database
-            if token:
+            if authorization:
                 print(f"DEBUG: analyze_pantry checking token...")
-                payload = AuthService.decode_access_token(token)
+                payload = AuthService.decode_access_token(authorization)
                 if payload:
                     user_id = payload.get("id")
                     print(f"DEBUG: analyze_pantry user_id: {user_id}")
@@ -258,12 +258,12 @@ async def analyze_pantry(file: UploadFile = File(...), token: Optional[str] = He
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/suggest-recipes", response_model=RecipeSuggestionResponse)
-async def suggest_recipes(request: RecipeSuggestionRequest, token: str = Header(None), db: AsyncSession = Depends(get_db)):
-    print(f"DEBUG: suggest_recipes called. Token present: {token is not None}")
+async def suggest_recipes(request: RecipeSuggestionRequest, authorization: str = Header(None), db: AsyncSession = Depends(get_db)):
+    print(f"DEBUG: suggest_recipes called. Authorization present: {authorization is not None}")
     try:
         saved_names = []
-        if token:
-            payload = AuthService.decode_access_token(token)
+        if authorization:
+            payload = AuthService.decode_access_token(authorization)
             if payload:
                 user_id = payload.get("id")
                 print(f"DEBUG: suggest_recipes user_id: {user_id}")

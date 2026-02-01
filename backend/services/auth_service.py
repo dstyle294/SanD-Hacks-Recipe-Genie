@@ -41,8 +41,16 @@ class AuthService:
 
     @staticmethod
     def decode_access_token(token: str):
+        if not token:
+            return None
+            
+        # Handle Bearer prefix
+        if token.startswith("Bearer "):
+            token = token.split(" ")[1]
+            
         try:
             payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
             return payload
-        except:
+        except Exception as e:
+            print(f"DEBUG: JWT decode failed: {str(e)}")
             return None

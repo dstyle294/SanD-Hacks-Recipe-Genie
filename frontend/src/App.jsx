@@ -126,7 +126,7 @@ const AppContent = () => {
               <ChefHat className="text-white w-7 h-7" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-              Recipe Genie
+              SnapChef
             </h1>
           </div>
 

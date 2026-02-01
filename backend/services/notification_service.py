@@ -22,7 +22,7 @@ class NotificationService:
 
         # Create message
         message = MIMEMultipart("alternative")
-        message["Subject"] = "⏰ Recipe Genie: Ingredients Expiring Soon!"
+        message["Subject"] = "⏰ SnapChef: Ingredients Expiring Soon!"
         message["From"] = FROM_EMAIL
         message["To"] = user_email
 
@@ -44,7 +44,7 @@ class NotificationService:
                     <a href="http://localhost:5173" style="background: #0d9488; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Check My Pantry</a>
                 </p>
                 <p style="font-size: 12px; color: #64748b; margin-top: 40px; text-align: center;">
-                    You received this because you have notifications enabled in Recipe Genie.
+                    You received this because you have notifications enabled in SnapChef.
                 </p>
             </div>
         """
