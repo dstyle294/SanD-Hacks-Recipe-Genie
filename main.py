@@ -14,9 +14,9 @@ def main():
     print("🚀 Starting Agentic Chef...")
     
     # 1. Vision Layer
-    # ingredients = getItems() 
-    ingredients = ['eggs', 'cheese', 'chives'] # Mocking for test if EyePop isn't connected
-    # print(f"👀 Detected: {ingredients}")
+    ingredients = getItems() 
+    # ingredients = ['eggs', 'cheese', 'chives'] # Mocking for test if EyePop isn't connected
+    print(f"👀 Detected: {ingredients}")
 
     # 2. Initialize Agent
     agent = SmartKitchenChain()
