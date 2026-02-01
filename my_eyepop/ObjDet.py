@@ -153,6 +153,7 @@ def run_text_detection(endpoint, image_path):
     return safe_predict(endpoint, image_path)
 
 def items_to_string(filtered_items):
+    print("here")
 
 
 # -------------------- MAIN --------------------

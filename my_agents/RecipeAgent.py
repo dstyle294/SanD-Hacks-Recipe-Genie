@@ -2,17 +2,6 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, AIMessage
 
 
-import os, sys
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-
-parent_dir = os.path.dirname(current_dir)
-
-sys.path.append(parent_dir)
-
-from eyepop import ObjDet
-
-getItems()
 
 
 class SmartKitchenChain:
@@ -36,13 +25,3 @@ class SmartKitchenChain:
         self.chat_history.append(response)
         
         return response.content
-
-# Usage
-
-agent = SmartKitchenChain()
-
-
-recipes = agent.chat(f"I have these ingredients: {ingredients}. Suggest ten common recipes, just give me the names of them.")
-
-response = agent.chat(f"Using these recipes: {recipes} , come up with search prompts on youtube to find cooking tutorials.")
-print(response)
