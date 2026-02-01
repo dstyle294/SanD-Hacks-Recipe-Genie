@@ -1,0 +1,24 @@
+{
+    "classes": [
+        {
+            "category": "food",
+            "classId": 0,
+            "classLabel": "can of pringles potato chips",
+            "confidence": 0.99,
+            "id": 1
+        },
+        {
+            "category": "food",
+            "classId": 1,
+            "classLabel": "orange mandarin fruit",
+            "confidence": 0.98,
+            "id": 2
+        }
+    ],
+    "seconds": 0,
+    "source_height": 1080,
+    "source_id": "0bb61276-ff2f-11f0-ae2c-52c4a210b0ed",
+    "source_width": 1920,
+    "system_timestamp": 1769923810414300000,
+    "timestamp": 0
+}

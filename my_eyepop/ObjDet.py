@@ -153,7 +153,13 @@ def run_text_detection(endpoint, image_path):
     return safe_predict(endpoint, image_path)
 
 def items_to_string(filtered_items):
-    print("here")
+    ingredients = ""
+
+    for json in filtered_items:
+        print(json)
+        ingredients += json['classlabel'] + ","
+
+    ingredients = ingredients[:-1]
 
 
 # -------------------- MAIN --------------------
@@ -163,10 +169,10 @@ def getItems():
         example_image_path = capture_image()
 
         # Blur check (NO EyePop call yet)
-        if is_blurry(example_image_path):
-            print("⚠️ Image is too blurry. Please retake the photo.\n")
-            cleanup_image(example_image_path)   # 🧹 DELETE BLURRY IMAGE
-            continue
+        # if is_blurry(example_image_path):
+        #     print("⚠️ Image is too blurry. Please retake the photo.\n")
+        #     cleanup_image(example_image_path)   # 🧹 DELETE BLURRY IMAGE
+        #     continue
 
         break
 
@@ -240,6 +246,8 @@ def getItems():
 
     print("Filtered items:")
     print(filtered_items)
+
+    print(items_to_string(filtered_items))
     
-    return filtered_items
+    return items_to_string(filtered_items=filtered_items)
 
