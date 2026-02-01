@@ -1,7 +1,7 @@
 {
     "classes": [
         {
-            "category": "food",
+            "category": "Food",
             "classId": 0,
             "classLabel": "protein bar",
             "confidence": 0.98,
@@ -10,8 +10,8 @@
     ],
     "seconds": 0,
     "source_height": 480,
-    "source_id": "51accf02-ff15-11f0-8dd7-e20e848ab14b",
+    "source_id": "9078c945-ff18-11f0-8dd7-e20e848ab14b",
     "source_width": 640,
-    "system_timestamp": 1769912761118480000,
+    "system_timestamp": 1769914154335471000,
     "timestamp": 0
 }

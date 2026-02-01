@@ -88,6 +88,69 @@ def filter_classes(eyepop_result):
         })
     return filtered
 
+# -------------------- CLEANUP --------------------
+def cleanup_image(image_path):
+    try:
+        if os.path.exists(image_path):
+            os.remove(image_path)
+            print(f"🧹 Deleted temporary image: {image_path}")
+    except Exception as e:
+        print(f"⚠️ Failed to delete image: {e}")
+
+# -------------------- TEXT FALLBACK CHECK --------------------
+def needs_text_fallback(filtered_items, min_conf=0.7):
+    """
+    Decide if text detection fallback is needed
+    """
+    if not filtered_items:
+        return True
+
+    avg_conf = sum(i["confidence"] for i in filtered_items) / len(filtered_items)
+    print(f"📊 Avg confidence: {avg_conf:.2f}")
+
+    return avg_conf < min_conf
+
+def normalize_text_result(text_result):
+    items = []
+
+    for c in text_result.get("classes", []):
+        label = c.get("classLabel")
+        if label:
+            items.append({
+                "category": "text-item",
+                "classlabel": label,
+                "confidence": float(c.get("confidence", 0))
+            })
+
+    return items
+# -------------------- TEXT DETECTION --------------------
+def run_text_detection(endpoint, image_path):
+    """
+    EyePop text detection fallback (receipts, bills, labels)
+    """
+    print("🔁 Running text detection fallback...")
+
+    endpoint.set_pop(
+        Pop(components=[
+            InferenceComponent(
+                id=2,
+                ability="eyepop.text-detection:latest",
+                params={
+                    "prompts": [
+                        {
+                            "prompt": (
+                                "Detect readable text in the image. "
+                                "If this is a bill or receipt, extract item names only. "
+                                "Ignore totals, prices, tax, people, and background text."
+                            )
+                        }
+                    ]
+                }
+            )
+        ])
+    )
+
+    return safe_predict(endpoint, image_path)
 
 # -------------------- MAIN --------------------
 
@@ -97,8 +160,11 @@ while True:
     # Blur check (NO EyePop call yet)
     if is_blurry(example_image_path):
         print("⚠️ Image is too blurry. Please retake the photo.\n")
+        cleanup_image(example_image_path)   # 🧹 DELETE BLURRY IMAGE
         continue
+
     break
+
 
 # 🔥 Generic, auto-safe prompt (NO USER INPUT)
 prompt = (
@@ -122,26 +188,47 @@ os.makedirs("./output", exist_ok=True)
 
 with EyePopSdk.workerEndpoint(api_key=api_key) as endpoint:
 
+    # Object detection
     endpoint.set_pop(
         Pop(components=[
             InferenceComponent(
                 id=1,
                 ability="eyepop.image-contents:latest",
-                params={
-                    "prompts": [{"prompt": prompt}]
-                }
+                params={"prompts": [{"prompt": prompt}]}
             )
         ])
     )
 
     result = safe_predict(endpoint, example_image_path)
 
+    filtered_items = filter_classes(result)
+
+    # ---------- FEATURE 3 + 4: SMART FALLBACK ----------
+    if needs_text_fallback(filtered_items):
+        text_result = run_text_detection(endpoint, example_image_path)
+        text_items = normalize_text_result(text_result)
+
+        combined = filtered_items + text_items
+
+        seen = set()
+        final_items = []
+        for item in combined:
+            key = item["classlabel"]
+            if key and key not in seen:
+                seen.add(key)
+                final_items.append(item)
+
+        filtered_items = final_items
+
+
+
+
 # -------------------- OUTPUT --------------------
 
 with open("./output/raw_eyepop.json", "w") as f:
     json.dump(result, f, indent=4)
 
-filtered_items = filter_classes(result)
+cleanup_image(example_image_path)
 
 print("✅ Filtered Output:")
 print(json.dumps(filtered_items, indent=4))
