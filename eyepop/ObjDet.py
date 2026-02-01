@@ -152,84 +152,93 @@ def run_text_detection(endpoint, image_path):
 
     return safe_predict(endpoint, image_path)
 
+def items_to_string(filtered_items):
+
+
 # -------------------- MAIN --------------------
 
-while True:
-    example_image_path = capture_image()
+def getItems():
+    while True:
+        example_image_path = capture_image()
 
-    # Blur check (NO EyePop call yet)
-    if is_blurry(example_image_path):
-        print("⚠️ Image is too blurry. Please retake the photo.\n")
-        cleanup_image(example_image_path)   # 🧹 DELETE BLURRY IMAGE
-        continue
+        # Blur check (NO EyePop call yet)
+        if is_blurry(example_image_path):
+            print("⚠️ Image is too blurry. Please retake the photo.\n")
+            cleanup_image(example_image_path)   # 🧹 DELETE BLURRY IMAGE
+            continue
 
-    break
-
-
-# 🔥 Generic, auto-safe prompt (NO USER INPUT)
-prompt = (
-    "Analyze the image. "
-    "Ignore people, faces, hands, body parts, and human features. "
-    "Ignore background objects not related to items or products. "
-    "If the image is a bill or receipt, list the items on the bill. "
-    "If the image is of a shelf or store display, list the products visible. "
-    "If the image is of a single product, list that product only. "
-    "If the image is unclear or contains no items, respond with NO OBJECTS DETECTED. "
-    "Otherwise, detect and list only physical items or products visible. "
-    "Do not include humans or body parts as objects. "
-    "Use clear class labels only. "
-    "If unsure, set classLabel to null."
-)
+        break
 
 
-print(f"\n🧠 Using prompt:\n{prompt}\n")
-
-os.makedirs("./output", exist_ok=True)
-
-with EyePopSdk.workerEndpoint(api_key=api_key) as endpoint:
-
-    # Object detection
-    endpoint.set_pop(
-        Pop(components=[
-            InferenceComponent(
-                id=1,
-                ability="eyepop.image-contents:latest",
-                params={"prompts": [{"prompt": prompt}]}
-            )
-        ])
+    # 🔥 Generic, auto-safe prompt (NO USER INPUT)
+    prompt = (
+        "Analyze the image. "
+        "Ignore people, faces, hands, body parts, and human features. "
+        "Ignore background objects not related to items or products. "
+        "If the image is a bill or receipt, list the items on the bill. "
+        "If the image is of a shelf or store display, list the products visible. "
+        "If the image is of a single product, list that product only. "
+        "If the image is unclear or contains no items, respond with NO OBJECTS DETECTED. "
+        "Otherwise, detect and list only physical items or products visible. "
+        "Do not include humans or body parts as objects. "
+        "Use clear class labels only. "
+        "If unsure, set classLabel to null."
     )
 
-    result = safe_predict(endpoint, example_image_path)
 
-    filtered_items = filter_classes(result)
+    print(f"\n🧠 Using prompt:\n{prompt}\n")
 
-    # ---------- FEATURE 3 + 4: SMART FALLBACK ----------
-    if needs_text_fallback(filtered_items):
-        text_result = run_text_detection(endpoint, example_image_path)
-        text_items = normalize_text_result(text_result)
+    os.makedirs("./output", exist_ok=True)
 
-        combined = filtered_items + text_items
+    with EyePopSdk.workerEndpoint(api_key=api_key) as endpoint:
 
-        seen = set()
-        final_items = []
-        for item in combined:
-            key = item["classlabel"]
-            if key and key not in seen:
-                seen.add(key)
-                final_items.append(item)
+        # Object detection
+        endpoint.set_pop(
+            Pop(components=[
+                InferenceComponent(
+                    id=1,
+                    ability="eyepop.image-contents:latest",
+                    params={"prompts": [{"prompt": prompt}]}
+                )
+            ])
+        )
 
-        filtered_items = final_items
+        result = safe_predict(endpoint, example_image_path)
+
+        filtered_items = filter_classes(result)
+
+        # ---------- FEATURE 3 + 4: SMART FALLBACK ----------
+        if needs_text_fallback(filtered_items):
+            text_result = run_text_detection(endpoint, example_image_path)
+            text_items = normalize_text_result(text_result)
+
+            combined = filtered_items + text_items
+
+            seen = set()
+            final_items = []
+            for item in combined:
+                key = item["classlabel"]
+                if key and key not in seen:
+                    seen.add(key)
+                    final_items.append(item)
+
+            filtered_items = final_items
 
 
 
 
-# -------------------- OUTPUT --------------------
+    # -------------------- OUTPUT --------------------
 
-with open("./output/raw_eyepop.json", "w") as f:
-    json.dump(result, f, indent=4)
+    with open("./output/raw_eyepop.json", "w") as f:
+        json.dump(result, f, indent=4)
 
-cleanup_image(example_image_path)
+    cleanup_image(example_image_path)
 
-print("✅ Filtered Output:")
-print(json.dumps(filtered_items, indent=4))
+    print("✅ Filtered Output:")
+    print(json.dumps(filtered_items, indent=4))
+
+    print("Filtered items:")
+    print(filtered_items)
+    
+    return filtered_items
 
