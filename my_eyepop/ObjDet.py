@@ -48,8 +48,21 @@ def capture_image(save_dir="./images"):
             cv2.destroyAllWindows()
             print(f"✅ Image saved to {image_path}")
             return image_path
-        
+
+# -------------------- ITEM LIST CONVERSION --------------------
+def items_to_list(filtered_items):
+    results = []
+    for item in filtered_items:
+        if item.get("classlabel"):
+            results.append({
+                "name": item["classlabel"].lower(),
+                "confidence": float(item.get("confidence", 0.7))
+            })
+    return results
+
+
 # -------------------- BLUR DETECTION --------------------
+
 def is_blurry(image_path, threshold=100.0):
     """
     Returns True if image is blurry
@@ -249,5 +262,6 @@ def getItems():
 
     print(items_to_string(filtered_items))
     
-    return items_to_string(filtered_items=filtered_items)
+    return items_to_list(filtered_items)
+
 

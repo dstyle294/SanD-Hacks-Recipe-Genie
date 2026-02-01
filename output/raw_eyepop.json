@@ -4,77 +4,105 @@
             "category": "fruit",
             "classId": 0,
             "classLabel": "bananas",
-            "confidence": 0.9499,
+            "confidence": 0.99,
             "id": 1
         },
         {
-            "category": "vegetable",
+            "category": "fruit",
             "classId": 1,
-            "classLabel": "cauliflower",
-            "confidence": 0.8999,
+            "classLabel": "apples",
+            "confidence": 0.98,
             "id": 2
         },
         {
             "category": "vegetable",
             "classId": 2,
             "classLabel": "carrots",
-            "confidence": 0.8999,
+            "confidence": 0.9499,
             "id": 3
         },
         {
-            "category": "meat",
+            "category": "vegetable",
             "classId": 3,
-            "classLabel": "sausages",
-            "confidence": 0.85,
+            "classLabel": "cauliflower",
+            "confidence": 0.9499,
             "id": 4
         },
         {
-            "category": "bakery",
+            "category": "vegetable",
             "classId": 4,
-            "classLabel": "packaged bread",
-            "confidence": 0.85,
+            "classLabel": "packaged mushrooms",
+            "confidence": 0.9399,
             "id": 5
         },
         {
-            "category": "dairy",
+            "category": "vegetable",
             "classId": 5,
-            "classLabel": "packaged cheese",
-            "confidence": 0.8,
+            "classLabel": "packaged salad greens",
+            "confidence": 0.93,
             "id": 6
         },
         {
-            "category": "dairy",
+            "category": "bakery",
             "classId": 6,
-            "classLabel": "packaged yogurt",
-            "confidence": 0.8,
+            "classLabel": "packaged bread",
+            "confidence": 0.92,
             "id": 7
         },
         {
-            "category": "snacks",
+            "category": "grocery",
             "classId": 7,
-            "classLabel": "packaged nuts",
-            "confidence": 0.75,
+            "classLabel": "packaged oats or grains",
+            "confidence": 0.8999,
             "id": 8
         },
         {
-            "category": "meat",
+            "category": "grocery",
             "classId": 8,
-            "classLabel": "packaged meat",
-            "confidence": 0.75,
+            "classLabel": "packaged nuts or seeds",
+            "confidence": 0.8899,
             "id": 9
         },
         {
-            "category": "vegetable",
+            "category": "grocery",
             "classId": 9,
-            "classLabel": "packaged vegetables",
-            "confidence": 0.6999,
+            "classLabel": "packaged dried fruit",
+            "confidence": 0.8799,
             "id": 10
+        },
+        {
+            "category": "dairy",
+            "classId": 10,
+            "classLabel": "packaged yogurt or dairy product",
+            "confidence": 0.87,
+            "id": 11
+        },
+        {
+            "category": "dairy",
+            "classId": 11,
+            "classLabel": "packaged cheese",
+            "confidence": 0.86,
+            "id": 12
+        },
+        {
+            "category": "grocery",
+            "classId": 12,
+            "classLabel": "packaged spices or seasoning",
+            "confidence": 0.85,
+            "id": 13
+        },
+        {
+            "category": "grocery",
+            "classId": 13,
+            "classLabel": "packaged coffee or tea",
+            "confidence": 0.8399,
+            "id": 14
         }
     ],
     "seconds": 0,
-    "source_height": 1080,
-    "source_id": "42da4d4e-ff34-11f0-ae2c-52c4a210b0ed",
-    "source_width": 1920,
-    "system_timestamp": 1769926052787342000,
+    "source_height": 480,
+    "source_id": "418ef616-ff4f-11f0-8dd7-e20e848ab14b",
+    "source_width": 640,
+    "system_timestamp": 1769937648815480000,
     "timestamp": 0
 }
